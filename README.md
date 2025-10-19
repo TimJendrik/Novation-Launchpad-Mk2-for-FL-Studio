@@ -34,12 +34,12 @@ Ein vollständig synchronisiertes **Launchpad MK2 MIDI Script** für **FL Studio
    in folgenden FL-Studio-Ordner:
 
 
-C:\Users<DEIN_NAME>\Documents\Image-Line\FL Studio\Settings\Hardware\
+  `C:\Users<DEIN_NAME>\Documents\Image-Line\FL Studio\Settings\Hardware\`
 
 
 oder unter macOS:
 
-~/Documents/Image-Line/FL Studio/Settings/Hardware/
+  `~/Documents/Image-Line/FL Studio/Settings/Hardware/`
 
 
 2. **In FL Studio auswählen**
@@ -48,7 +48,7 @@ oder unter macOS:
 - Wähle dein **Launchpad MK2** unter *Input*  
 - Aktiviere ✅ *Enable*  
 - Wähle als **Script:**  
-  `Tims Launchpad MK2 (RGB)`
+  `Novation-Launchpad-Mk2-for-FL-Studio`
 
 3. **Fertig!**  
 Das Launchpad sollte nun automatisch mit den FL Studio Channel-Farben leuchten.
