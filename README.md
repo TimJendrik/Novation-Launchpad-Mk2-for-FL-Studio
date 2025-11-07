@@ -109,4 +109,3 @@ Made with ❤️ and Python MIDI Scripting
 ## 📜 Lizenz
 
 Dieses Script darf frei verwendet, angepasst und weitergegeben werden.  
-Bitte nenne den ursprünglichen Autor (`Tim`) bei Weiterveröffentlichung.

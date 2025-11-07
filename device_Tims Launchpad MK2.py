@@ -24,6 +24,7 @@ pads = []
 # ==========================================================
 # Hilfsfunktionen
 # ==========================================================
+last_channel_count = -1
 
 
 def calc_note_from_index(idx):
@@ -95,6 +96,8 @@ def build_pads():
     """Initialisiert alle Pads mit Channel-Zuordnung und LED-Farbe."""
     pads.clear()
     count = min(channels.channelCount(), MAX_PADS)
+
+    # 1) Nur existierende Channels neu aufbauen & LED setzen
     for idx in range(count):
         note = calc_note_from_index(idx)
         active = not channels.isChannelMuted(idx)
@@ -102,6 +105,11 @@ def build_pads():
         pad["color"] = get_adjusted_pad_color(pad)
         pads.append(pad)
         light_pad(note, pad["color"])
+
+    # 2) Restliche Pads (falls früher mehr Channels existierten) ausschalten
+    for idx in range(count, MAX_PADS):
+        note = calc_note_from_index(idx)
+        light_pad_rgb(note, 0, 0, 0)
 
 
 def invert_activated_state(pad):
@@ -118,11 +126,12 @@ def invert_activated_state(pad):
 
 
 def OnInit():
-    """Wird beim Laden des Scripts aufgerufen."""
+    global last_channel_count
     # Alle LEDs aus
     for n in range(11, 99):
         light_pad_rgb(n, 0, 0, 0)
     build_pads()
+    last_channel_count = channels.channelCount()
 
 
 def OnNoteOn(event):
@@ -147,9 +156,31 @@ def OnRefresh(flags):
     Wird aufgerufen, wenn FL Studio Änderungen an Channels erkannt hat.
     Aktualisiert nur geänderte Pads → reduziert MIDI-Traffic deutlich.
     """
+    global last_channel_count
+
+    current_count = channels.channelCount()
+
+    # 0) Wurde ein Channel hinzugefügt oder entfernt?
+    if current_count != last_channel_count:
+        last_channel_count = current_count
+        build_pads()  # aber MAXIMAL einmal – danach wieder sparsam!
+        return
+
+    # 1) Bestehende Pads prüfen (Mute/Farbe)
     for pad in pads:
-        new_state = not channels.isChannelMuted(pad["index"])
-        if new_state != pad["activated"]:
-            pad["activated"] = new_state
+        idx = pad["index"]
+
+        # Mute-State
+        new_active = not channels.isChannelMuted(idx)
+        if new_active != pad["activated"]:
+            pad["activated"] = new_active
             pad["color"] = get_adjusted_pad_color(pad)
+            light_pad(pad["note"], pad["color"])
+            continue
+
+        # Farbänderung
+        r, g, b = get_fl_color_rgb(idx)
+        expected = (r, g, b) if pad["activated"] else (r // 4, g // 4, b // 4)
+        if expected != pad["color"]:
+            pad["color"] = expected
             light_pad(pad["note"], pad["color"])
